@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from models import Actor, CinemaHall, Genre, Movie
+from models import Actor, CinemaHall, Genre, Movie, MovieSession
 
 
 class ActorSerializer(serializers.Serializer):
@@ -73,5 +73,20 @@ class MovieSerializer(serializers.Serializer):
             "description", instance.description
         )
         instance.duration = validated_data.get("duration", instance.duration)
+        instance.save()
+        return instance
+
+
+class MovieSessionSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    show_time = serializers.DateTimeField()
+
+    def create(self, validated_data):
+        return MovieSession.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.show_time = validated_data.get(
+            "show_time", instance.show_time
+        )
         instance.save()
         return instance
