@@ -9,23 +9,11 @@ class ActorSerializer(serializers.ModelSerializer):
         fields = ["id", "first_name", "last_name"]
 
 
-class CinemaHallSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=255)
-    rows = serializers.IntegerField()
-    seats_in_row = serializers.IntegerField()
+class CinemaHallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CinemaHall
+        fields = ["id", "name", "rows", "seats_in_row"]
 
-    def create(self, validated_data: dict) -> CinemaHall:
-        return CinemaHall.objects.create(**validated_data)
-
-    def update(self, instance: CinemaHall, validated_data: dict) -> CinemaHall:
-        instance.name = validated_data.get("name", instance.name)
-        instance.rows = validated_data.get("rows", instance.rows)
-        instance.seats_in_rows = validated_data.get(
-            "seats_in_rows", instance.seats_in_rows
-        )
-        instance.save()
-        return instance
 
 
 class GenreSerializer(serializers.Serializer):
