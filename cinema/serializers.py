@@ -21,23 +21,28 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
-class MovieSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(max_length=255)
-    description = serializers.CharField(style={"type": "textarea"})
-    duration = serializers.IntegerField()
+class MovieSerializer(serializers.ModelSerializer):
+    genres = GenreSerializer(many=True, read_only=True)
+    actors = ActorSerializer(many=True, read_only=True)
 
-    def create(self, validated_data: dict) -> Movie:
-        return Movie.objects.create(**validated_data)
+    class Meta:
+        model = Movie
+        fields = ["id", "title", "description", "duration", "genres", "actors"]
 
-    def update(self, instance: Movie, validated_data: dict) -> Movie:
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        instance.duration = validated_data.get("duration", instance.duration)
-        instance.save()
-        return instance
+
+class MovieListSerializer(serializers.ModelSerializer):
+    genres_name = serializers.SerializerMethodField()
+    actors_full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Movie
+        fields = ["id", "title", "description", "duration", "genres_name", "actors_full_name"]
+
+    def get_genres_name(self, obj):
+        return [genre.name for genre in obj.genres.all()]
+
+    def get_actors_full_name(self, obj):
+        return [actor.full_name for actor in obj.actors.all()]
 
 
 class MovieSessionSerializer(serializers.Serializer):
