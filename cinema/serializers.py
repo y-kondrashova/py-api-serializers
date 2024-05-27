@@ -1,26 +1,12 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
 from cinema.models import Actor, CinemaHall, Genre, Movie, MovieSession
 
 
-class ActorSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    first_name = serializers.CharField(max_length=255)
-    last_name = serializers.CharField(max_length=255)
-
-    def create(self, validated_data: dict) -> Actor:
-        return Actor.objects.create(**validated_data)
-
-    def update(self, instance: Actor, validated_data: dict) -> Actor:
-        instance.first_name = validated_data.get(
-            "first_name", instance.first_name
-        )
-        instance.last_name = validated_data.get(
-            "last_name", instance.last_name
-        )
-        instance.save()
-        return instance
+class ActorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Actor
+        fields = ["id", "first_name", "last_name"]
 
 
 class CinemaHallSerializer(serializers.Serializer):
