@@ -15,21 +15,10 @@ class CinemaHallSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "rows", "seats_in_row"]
 
 
-
-class GenreSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(
-        max_length=255,
-        validators=[UniqueValidator(queryset=Genre.objects.all())]
-    )
-
-    def create(self, validated_data: dict) -> Genre:
-        return Genre.objects.create(**validated_data)
-
-    def update(self, instance: Genre, validated_data: dict) -> Genre:
-        instance.name = validated_data.get("name", instance.name)
-        instance.save()
-        return instance
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ["id", "name"]
 
 
 class MovieSerializer(serializers.Serializer):
