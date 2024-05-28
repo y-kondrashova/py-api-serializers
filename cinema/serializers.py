@@ -69,22 +69,35 @@ class MovieSessionSerializer(serializers.ModelSerializer):
         fields = ["id", "show_time", "movie", "cinema_hall"]
 
 
-    def get_actors_full_name(self, obj):
-        return [actor.full_name for actor in obj.actors.all()]
+class MovieSessionListSerializer(serializers.ModelSerializer):
+    movie_title = serializers.CharField(
+        source="movie.title",
+        read_only=True
+    )
+    cinema_hall_name = serializers.CharField(
+        source="cinema_hall.name",
+        read_only=True
+    )
+    cinema_hall_capacity = serializers.IntegerField(
+        source="cinema_hall.capacity",
+        read_only=True
+    )
+
+    class Meta:
+        model = MovieSession
+        fields = [
+            "id",
+            "show_time",
+            "movie_title",
+            "cinema_hall_name",
+            "cinema_hall_capacity"
+        ]
 
 
-class MovieSessionSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    show_time = serializers.DateTimeField()
+class MovieSessionRetrieveSerializer(MovieSessionSerializer):
+    movie = MovieListSerializer(read_only=True)
+    cinema_hall = CinemaHallSerializer(read_only=True)
 
-    def create(self, validated_data: dict) -> MovieSession:
-        return MovieSession.objects.create(**validated_data)
-
-    def update(self,
-               instance: MovieSession,
-               validated_data: dict) -> MovieSession:
-        instance.show_time = validated_data.get(
-            "show_time", instance.show_time
-        )
-        instance.save()
-        return instance
+    class Meta:
+        model = MovieSession
+        fields = "__all__"
