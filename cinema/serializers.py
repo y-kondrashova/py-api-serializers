@@ -4,10 +4,7 @@ from cinema.models import Actor, CinemaHall, Genre, Movie, MovieSession
 
 
 class ActorSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField()
-
-    def get_full_name(self, obj: Actor) -> str:
-        return obj.full_name
+    full_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = Actor
@@ -15,10 +12,7 @@ class ActorSerializer(serializers.ModelSerializer):
 
 
 class CinemaHallSerializer(serializers.ModelSerializer):
-    capacity = serializers.SerializerMethodField()
-
-    def get_capacity(self, obj: CinemaHall) -> int:
-        return obj.capacity
+    capacity = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = CinemaHall
